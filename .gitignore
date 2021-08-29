@@ -1,0 +1,9 @@
+# Build files
+!build
+build/*
+!build/SunikiEngine
+build/SunikiEngine/SunikiEngine
+
+# System specific files
+**/.DS_Store
+**/.vscode
