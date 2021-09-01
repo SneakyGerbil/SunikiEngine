@@ -1,10 +1,10 @@
 #include "shader.hpp"
 
+
 Shader::Shader(const char* vertexFilePath, const char* fragmentFilePath){
     //=============================//
     // Retrieve shader source code //
     //=============================//
-    
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
