@@ -11,6 +11,11 @@ set_target_properties("${PROJECT_NAME}"
 link_libraries(
     glad
     glfw
+    glm
+    )
+
+#Link needed librariies to every target in directory
+link_libraries(
     stb_image
     )
 

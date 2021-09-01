@@ -4,5 +4,6 @@ project(SunikiEngine VERSION 1.0.0)
 
 add_subdirectory(include/glad)
 add_subdirectory(include/glfw)
+add_subdirectory(include/glm)
 add_subdirectory(include/stb_image)
 add_subdirectory(src)
