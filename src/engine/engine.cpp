@@ -182,22 +182,6 @@ int main(){
     //     Main Loop      //
     //====================//
 
-
-
-
-
-
-    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
-    vec = trans * vec;
-    std::cout << vec.x << vec.y << vec.z << std::endl;
-
-
-
-
-
-
     //Load and set shader
     Shader shader("./testShaders/vertexShader.glsl", "./testShaders/fragmentShader.glsl");
     shader.use();
@@ -210,6 +194,23 @@ int main(){
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
+
+
+
+
+
+    //Transform
+    //glm::mat4 trans = glm::mat4(1.0f); //Identity 4x4 matrix
+    //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    //trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+    //Pass transform matrix to shader
+    unsigned int transformLoc = glGetUniformLocation(shader.ID, "transform");
+    //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+
+
+
+
     //Bind VAO
     glBindVertexArray(VAO);
 
@@ -220,7 +221,13 @@ int main(){
         //Clear screen
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-                
+        
+        //Rotate the box
+        glm::mat4 trans = glm::mat4(1.0f); //Identity 4x4 matrix
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+        //Draw the box
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
