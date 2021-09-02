@@ -21,9 +21,11 @@ link_libraries(
 
 #Add shader directory
 add_subdirectory(renderer/shader)
+add_subdirectory(renderer/camera)
 
 #Link shader library to engine
 target_link_libraries(
     "${PROJECT_NAME}"
     PRIVATE shader
+    PRIVATE camera
     )

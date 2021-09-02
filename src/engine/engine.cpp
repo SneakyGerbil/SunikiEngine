@@ -13,7 +13,13 @@
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, float delta);
+
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+const float cameraSpeed = 10.0f;
 
 
 int main(){
@@ -61,6 +67,9 @@ int main(){
 
     //Set window resize callback (Called whenever window gets resized)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    //Set VSync
+    glfwSwapInterval(GLFW_TRUE);
 
     //Set depth testing
     glEnable(GL_DEPTH_TEST);
@@ -263,8 +272,8 @@ int main(){
 
 
     //View transform
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     //Projection transform
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f);
@@ -276,14 +285,31 @@ int main(){
     //Bind VAO
     glBindVertexArray(VAO);
 
+
+
+    //Set up timer
+    float delta = 0.0f;
+    float prevFrameT = 0.0f;
     while(!glfwWindowShouldClose(window)){
+        //Calculate delta
+        float currentFrameT = glfwGetTime();
+        delta = currentFrameT - prevFrameT;
+        prevFrameT = currentFrameT;
+
+        std::cout << 1.0f/delta << std::endl;
+
         //Process input
-        processInput(window);
+        processInput(window, delta);
+        
+        //Move camera
+        const float radius = 10.0f;
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
 
         //Clear screen
         glClearColor(0.023f, 0.172f, 0.258f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
 
         //Draw many cubes
         for(unsigned int i = 0; i < 10; i++){
@@ -297,11 +323,6 @@ int main(){
             //Draw the cube
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
-
-        //Draw the box
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 
         //Swap front and back buffers and process events
         glfwSwapBuffers(window);
@@ -323,8 +344,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     return;
 }
 
-void processInput(GLFWwindow* window){
+void processInput(GLFWwindow* window, float delta){
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
         glfwSetWindowShouldClose(window, true);
     }
+
+    //Movement
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * delta * cameraFront;
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * delta * cameraFront;
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * delta;
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed * delta;
 }
